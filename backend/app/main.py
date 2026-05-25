@@ -14,9 +14,7 @@ async def lifespan(app: FastAPI):
     await create_tables()
     os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
     os.makedirs(settings.FAISS_INDEX_DIR, exist_ok=True)
-    # Init FAISS indexes
-    from app.ai.vector_store import vector_store
-    vector_store.load()
+    # Load FAISS indexes lazily — vector_store auto-loads on first use
     yield
 
 

@@ -66,5 +66,17 @@ async def seed():
     print("Seeding complete!")
 
 
+async def main():
+    import time
+    for attempt in range(10):
+        try:
+            await seed()
+            return
+        except Exception as e:
+            print(f"Seed attempt {attempt + 1} failed: {e}. Retrying in 5s...")
+            await asyncio.sleep(5)
+    print("Seeding failed after 10 attempts — continuing without seed data")
+
+
 if __name__ == "__main__":
-    asyncio.run(seed())
+    asyncio.run(main())
