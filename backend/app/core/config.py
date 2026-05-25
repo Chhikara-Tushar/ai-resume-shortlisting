@@ -44,22 +44,14 @@ class Settings(BaseSettings):
     # FAISS
     FAISS_INDEX_DIR: str = "./data/faiss_index"
 
-    # CORS — set to * or comma-separated URLs via env var
-    CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost", "http://localhost:80"]
+    # CORS — plain string to avoid pydantic_settings v2 JSON-parsing List[str]
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost,http://localhost:80"
 
-    @field_validator("CORS_ORIGINS", mode="before")
-    @classmethod
-    def parse_cors(cls, v):
-        if isinstance(v, str):
-            v = v.strip()
-            if v.startswith("["):
-                import json
-                try:
-                    return json.loads(v)
-                except Exception:
-                    pass
-            return [i.strip() for i in v.split(",")]
-        return v
+    def get_cors_origins(self) -> List[str]:
+        v = self.CORS_ORIGINS.strip()
+        if v == "*":
+            return ["*"]
+        return [i.strip() for i in v.split(",") if i.strip()]
 
 
 settings = Settings()
